@@ -1,0 +1,7 @@
+# python files:
+
+# all cached data
+**/__pycache__ 
+
+# ignore venv
+venv
