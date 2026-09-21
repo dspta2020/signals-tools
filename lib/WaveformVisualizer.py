@@ -1,6 +1,7 @@
 from lib.Waveform import Waveform
 from lib.visualization.TimeDomainPlotter import TimeDomainPlotter
 from lib.visualization.SpectrogramPlotter import SpectrogramPlotter
+from lib.visualization.SpectrumPlotter import SpectrumPlotter
 
 
 class WaveformVisualizer:
@@ -12,6 +13,7 @@ class WaveformVisualizer:
         # make the mutable waveform plot
         self.time_domain_plotter = TimeDomainPlotter(self.waveform)
         self.spectrogram_plotter = SpectrogramPlotter(self.waveform)
+        self.spectrum_plotter = SpectrumPlotter(self.waveform)
 
     def plot_time_domain(self, x_units: str = "sec", y_units: str = "real", **kwargs):
         """
@@ -24,3 +26,9 @@ class WaveformVisualizer:
         Plots the time/frequency (spectrogram) representation of a waveform/signal.
         """
         self.spectrogram_plotter.plot(window_len, nfft, x_units, y_units, **kwargs)
+
+    def plot_spectrum(self, nfft: int, x_units: str = "hz", y_units: str = "dB", **kwargs):
+        """
+        Plots the time/frequency (spectrogram) representation of a waveform/signal.
+        """
+        self.spectrum_plotter.plot(nfft, x_units, y_units, **kwargs)
