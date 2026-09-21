@@ -72,6 +72,27 @@ class Waveform:
             # If ndim == 1, no action needed; array stays as-is
             return self.samples
 
+    def print_waveform_info(self):
+        from lib.utils.Utilities import Utilities
+
+        sr_converted = Utilities.auto_scale_frequency(self.sample_rate_hz)
+        ss_converted = Utilities.auto_scale_time(self.sample_spacing_sec)
+        dur_converted = Utilities.auto_scale_time(self.total_duration_sec)
+        start_converted = Utilities.auto_scale_time(self.duration_sec[0])
+        end_converted = Utilities.auto_scale_time(self.duration_sec[-1])
+        cf_converted = Utilities.auto_scale_frequency(self.center_frequency_hz)
+
+        print(f"{'-'*30}BEGIN PRINTING WAVEFORM INFO{'-'*30}")
+        print(f"Sample Rate: {sr_converted.value:.3f} {sr_converted.unit}")
+        print(f"Sample Spacing: {ss_converted.value:.3f} {ss_converted.unit}")
+        print(f"Sample Duration: {dur_converted.value:.3f} {dur_converted.unit}")
+        print(f"Signal Start: {start_converted.value:.3f} {start_converted.unit}")
+        print(f"Signal End: {end_converted.value:.3f} {end_converted.unit}")
+        print(f"Number Samples Complex: {self.num_samples_complex} samples")
+        print(f"Number Samples Interleaved: {self.num_samples_interleaved} samples")
+        print(f"Center Frequency Absolute: {cf_converted.value:.3f} {cf_converted.unit}")
+        print(f"{'-'*30}END PRINTING WAVEFORM INFO{'-'*30}")
+
     def mix_data(self, lo_freq_hz):
 
         # call reshape to make vector N x 1
