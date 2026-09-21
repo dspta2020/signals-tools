@@ -88,8 +88,8 @@ class Waveform:
         print(f"Sample Duration: {dur_converted.value:.3f} {dur_converted.unit}")
         print(f"Signal Start: {start_converted.value:.3f} {start_converted.unit}")
         print(f"Signal End: {end_converted.value:.3f} {end_converted.unit}")
-        print(f"Number Samples Complex: {self.num_samples_complex} samples")
-        print(f"Number Samples Interleaved: {self.num_samples_interleaved} samples")
+        print(f"Number Samples Complex: {self.num_samples_complex:,.0f} samples")
+        print(f"Number Samples Interleaved: {self.num_samples_interleaved:,.0f} samples")
         print(f"Center Frequency Absolute: {cf_converted.value:.3f} {cf_converted.unit}")
         print(f"{'-'*30}END PRINTING WAVEFORM INFO{'-'*30}")
 
