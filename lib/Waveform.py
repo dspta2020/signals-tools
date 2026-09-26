@@ -103,13 +103,13 @@ class Waveform:
 
         return Waveform(mixed_iq, self.sample_rate_hz, self.center_frequency_hz, initial_time_offset_sec=self.initial_time_offset_sec)
 
-    def integer_quantize(self, num_bits: int = 16):
+    def integer_quantize(self, num_bits: int = 16) -> np.ndarray:
 
         # first normalize the interleaved IQ to unity
         normalized_samples = self.iq_interleaved / np.max(np.abs(self.iq_interleaved))
 
         # simple twos-complement quantization more or less
-        return np.round(normalized_samples * (2 ** (num_bits - 1) - 1)).astype(np.int32)
+        return np.round(normalized_samples * (2 ** (num_bits - 1) - 1)).astype(np.int16)
 
     def resample_poly(self, desired_rate_hz: float, **kwargs):
         # import modules specifically for this

@@ -4,6 +4,7 @@ from lib.Waveform import Waveform
 
 
 class BasePlotter(ABC):
+
     def __init__(self, waveform: Waveform):
         super().__init__()
         # waveform object containing signal data
