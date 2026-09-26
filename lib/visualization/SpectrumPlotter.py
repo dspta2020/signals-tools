@@ -24,7 +24,7 @@ class SpectrumPlotter(BasePlotter):
         y_switch = y_units.strip().lower()
         if y_switch == "linear":
             y_data = abs(fftshift(fft(self.waveform.samples, nfft))) ** 2
-        elif y_switch == "dB":
+        elif y_switch == "db":
             y_data = 20 * log10(abs(fftshift(fft(self.waveform.samples, nfft))))
         else:
             print(f"SpectrumPlotter: Invalid y_units ({y_switch}), defaulting to `dB`")
