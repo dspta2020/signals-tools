@@ -22,7 +22,7 @@ class BaseWriter(ABC):
         normalized = endianness.strip()
 
         if normalized not in ["<", ">"]:
-            # Log as ERROR or WARNING depending on if you want to fail hard or fallback
+
             if self.DEFAULT_ENDIANNESS == ">":
                 print(f"Invalid endianness '{endianness}' detected. " f"Falling back to default: {self.DEFAULT_ENDIANNESS}")
                 self.endianness = self.DEFAULT_ENDIANNESS
