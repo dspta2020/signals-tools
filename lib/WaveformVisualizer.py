@@ -21,7 +21,7 @@ class WaveformVisualizer:
         """
         self.time_domain_plotter.plot(x_units, y_units, **kwargs)
 
-    def plot_spectrogram(self, window_len, nfft, x_units: str = "sec", y_units: str = "real", **kwargs):
+    def plot_spectrogram(self, window_len, nfft, x_units: str = "sec", y_units: str = "mhz", **kwargs):
         """
         Plots the time/frequency (spectrogram) representation of a waveform/signal.
         """
