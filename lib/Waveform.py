@@ -96,7 +96,7 @@ class Waveform:
     def mix_data(self, lo_freq_hz):
 
         # call reshape to make vector N x 1
-        digital_lo = np.exp(1j * 2 * np.pi * lo_freq_hz * self.duration_sec)[:, np.newaxis]
+        digital_lo = np.exp(1j * 2 * np.pi * lo_freq_hz * self.duration_sec)
 
         # also N x 1
         mixed_iq = self.samples * digital_lo
