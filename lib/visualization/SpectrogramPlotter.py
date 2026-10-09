@@ -34,6 +34,7 @@ class SpectrogramPlotter(BasePlotter):
         title = kwargs.get("title", "Spectrogram")
         cmap = kwargs.get("cmap", "viridis")
         add_color_bar = kwargs.get("colorbar", False)
+        add_center = kwargs.get("add_center", False)
 
         # process the units
         time_factor, time_label = PlotRescaler.get_time_scaling(x_units)
@@ -44,8 +45,12 @@ class SpectrogramPlotter(BasePlotter):
         extent = []
         extent.append((t0 + self.waveform.initial_time_offset_sec) * time_factor)
         extent.append((t1 + self.waveform.initial_time_offset_sec) * time_factor)
-        extent.append(f0 * freq_factor)
-        extent.append(f1 * freq_factor)
+        if not add_center:
+            extent.append(f0 * freq_factor)
+            extent.append(f1 * freq_factor)
+        else:
+            extent.append((f0 + self.waveform.center_frequency_hz) * freq_factor)
+            extent.append((f1 + self.waveform.center_frequency_hz) * freq_factor)
 
         # calculate power in dB
         stft_power = 20 * np.log10(np.abs(stft_array))
