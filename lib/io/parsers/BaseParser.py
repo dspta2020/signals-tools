@@ -14,22 +14,16 @@ class BaseParser(ABC):
     def __init__(self, endianness: str = ">") -> None:
         self.sample_precision = self.DEFAULT_SAMPLE_PRECISION
         self.header_precision = self.DEFAULT_HEADER_PRECISION
-        self._setup_endianness(endianness)
+        self._validate_endianness(endianness)
 
-    def _setup_endianness(self, endianness: str) -> None:
+    def _validate_endianness(self, endianness: str) -> None:
         """Validates and sets the byte order. Raises ValueError if invalid."""
         # Normalize input (strip spaces usually expected but validate explicitly)
         normalized = endianness.strip()
 
         if normalized not in ["<", ">"]:
-
-            if self.DEFAULT_ENDIANNESS == ">":
-                print(f"Invalid endianness '{endianness}' detected. " f"Falling back to default: {self.DEFAULT_ENDIANNESS}")
-                self.endianness = self.DEFAULT_ENDIANNESS
-            else:
-                # If this was a strict configuration error, we might want to raise here
-                # For now, logging is safer for backward compatibility
-                raise ValueError(f"Invalid endianness string provided: {endianness}")
+            print(f"Invalid endianness '{endianness}' detected. " f"Falling back to default: {self.DEFAULT_ENDIANNESS}")
+            self.endianness = self.DEFAULT_ENDIANNESS
 
         # Store the validated value
         self.endianness = normalized
