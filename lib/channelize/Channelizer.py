@@ -86,3 +86,59 @@ class Channelizer:
         samples_out[:delay] = 0
 
         return samples_out
+
+    def channelize(self, waveform_in: Waveform, M: int, D: int, h: ndarray):
+        """
+        General psudo-WOLA polyphase channelizer architecture.
+
+        Initial pass where input waveform is split into M evenly spaced channels,
+        each decimated by a factor of D.
+        """
+        from numpy import asarray, pad, empty, result_type, exp
+        from scipy.fft import fftfreq, fft
+        from scipy.constants import pi
+
+        # length of the filter
+        P = len(h)
+
+        # x is the input vector here
+        x = asarray(waveform_in.samples)
+
+        # can pad the input here to fully charge the filter, for example if M = 4
+        # and h is 256 taps the first window w_0 = [0, 0, ... 1, 2, 3, 4] where
+        # len(w_0) is 256 next window will be advance 4 samples [0, ... 1, 2, 3, 4, 5, 6, 7, 8]
+        x = pad(x, (P - M, 0), constant_values=0)
+
+        if P % M != 0:
+            raise ValueError("Prototype length must be divisible by M")
+
+        # the number of frames that come out, is the input samples decimated..
+        # floor division ensures number of full frames
+        num_frames = (len(x) - P) // D + 1
+
+        # store the channel output
+        channel_centers = fftfreq(M, d=1 / self.sample_rate_hz)
+        channel_output = empty((num_frames, M), dtype=result_type(x, h))
+
+        # iterate over each frame which advances D samples i.e. we produce one output
+        # sample in every subband for each D sample advance
+        for r in range(num_frames):
+            start = r * D
+            # for now just using the prototype filter as the window function
+            frame = x[start : start + P] * h
+
+            # reshape into polyphase components and sum to apply convolution
+            folded_frame = frame.reshape(P // M, M).sum(0)
+
+            # channelize
+            channel_output[r, :] = fft(folded_frame, axis=0) * exp(-1j * 2 * pi * channel_centers.reshape(1, -1) * r / (self.sample_rate_hz / D))
+
+        self.channels = channel_output
+        self.channel_centers = channel_centers
+
+    @staticmethod
+    def _make_prototype_fir_filter(sample_rate, decimation_factor, num_taps):
+        from scipy.signal import firwin
+
+        cutoff = (sample_rate / 2) / decimation_factor
+        return firwin(num_taps, cutoff, fs=sample_rate)
