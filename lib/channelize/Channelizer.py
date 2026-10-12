@@ -76,7 +76,7 @@ class Channelizer:
         return reshape(samples_in, (-1, N), order="C")
 
     @staticmethod
-    def _delay_signal(samples_in: ndarray, delay: int):
+    def _delay_signal(samples_in: ndarray, delay: int) -> ndarray:
         """
         Delays a sample vector, truncating its output.
         """
@@ -87,7 +87,7 @@ class Channelizer:
 
         return samples_out
 
-    def channelize(self, waveform_in: Waveform, M: int, D: int, h: ndarray):
+    def channelize(self, waveform_in: Waveform, M: int, D: int, h: ndarray) -> None:
         """
         General psudo-WOLA polyphase channelizer architecture.
 
@@ -137,8 +137,23 @@ class Channelizer:
         self.channel_centers = channel_centers
 
     @staticmethod
-    def _make_prototype_fir_filter(sample_rate, decimation_factor, num_taps):
+    def _make_prototype_fir_filter(sample_rate, decimation_factor, num_taps) -> ndarray:
         from scipy.signal import firwin
 
         cutoff = (sample_rate / 2) / decimation_factor
         return firwin(num_taps, cutoff, fs=sample_rate)
+
+    def plot_filter(self, filter_taps: ndarray, can_show: bool) -> None:
+        from matplotlib import sca, subplots, show
+
+        num_taps = len(filter_taps)
+
+        fig, [ax0, ax1] = subplots(2, 1, tight_layout=True)
+        wf_h = Waveform(filter_taps, self.sample_rate_hz, 0)
+        sca(ax0)
+        wf_h.visualizer.plot_time_domain("msec", "real")  # should be real only vector
+        sca(ax1)
+        wf_h.visualizer.plot_spectrum(num_taps / 4, 8192, "sec", "hz")
+
+        if can_show:
+            show()
