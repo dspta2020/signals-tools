@@ -8,3 +8,4 @@ some file serializations (which are TODO).
 3. **`lib/utils/Utilites`**: General purpose helper functions mapping data types.
 4. **`lib/io/WaveformReader`**: Peripheral to read waveforms out of bin files. Currently only supports file format of header 3x int32s and interleaved I and Q sample data as int16s. 
 5. **`lib/io/WaveformWriter`**: Peripheral to write waveform into bin files. Currently only supports file format of header 3x int32s and interleaved I and Q sample data as int16s. 
+6. **`lib/channelize/Channelizer`**: Initial implementation of multirate signals processing tooling. Currently only supports critically sampled analysis filter bank.
