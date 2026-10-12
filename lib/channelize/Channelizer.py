@@ -89,7 +89,7 @@ class Channelizer:
 
     def channelize(self, waveform_in: Waveform, M: int, D: int, h: ndarray) -> None:
         """
-        General psudo-WOLA polyphase channelizer architecture.
+        General pseudo-WOLA polyphase channelizer architecture.
 
         Initial pass where input waveform is split into M evenly spaced channels,
         each decimated by a factor of D.
