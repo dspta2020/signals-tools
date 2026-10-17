@@ -25,7 +25,7 @@ class Utilities:
         unit: str
 
     @staticmethod
-    def auto_scale_frequency(freq_hz: float) -> "Utilities.ScaledResult":
+    def auto_scale_frequency(freq_hz) -> "Utilities.ScaledResult":
         """
         Scales a frequency to the largest appropriate unit.
         Rounds to 3 significant digits or 2 decimal places for readability.
@@ -45,7 +45,7 @@ class Utilities:
         return Utilities.ScaledResult(value=round(abs_val, 4), unit="Hz")
 
     @staticmethod
-    def auto_scale_time(time_sec: float) -> "Utilities.ScaledResult":
+    def auto_scale_time(time_sec) -> "Utilities.ScaledResult":
         """
         Scales a time value to the largest appropriate unit.
         Rounds to 3 significant digits or 2 decimal places for readability.

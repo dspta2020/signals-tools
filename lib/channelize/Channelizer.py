@@ -14,14 +14,14 @@ class Channelizer:
 
         # channel centers are evenly spaced based on the sample rate and the desired number of output channels
         self.channel_spacing_hz = self.sample_rate_hz / self.M
-        self.channel_centers_hz = fftshift(fftfreq(self.M, 1 / self.sample_rate_hz))
+        self.channel_centers_hz = fftfreq(self.M, 1 / self.sample_rate_hz)
 
         # simple channel bandwidth calculation here because its simply based on the sample rate
         self.channel_bandwidth_hz = sample_rate_hz / self.D
 
         # for holding onto state
+        self.num_frames = None
         self.channels = None
-        self.channel_centers = None
 
     def generate_channels(self, data_in: ndarray | Waveform, filter_in: ndarray) -> None:
         """
@@ -51,18 +51,18 @@ class Channelizer:
         # can pad the input here to fully charge the filter, for example if M = 4
         # and h is 256 taps the first window w_0 = [0, 0, ... 1, 2, 3, 4] where
         # len(w_0) is 256 next window will be advance 4 samples [0, ... 1, 2, 3, 4, 5, 6, 7, 8]
-        x = pad(x, (num_taps - self.M, 0), constant_values=0)
+        x = pad(x, ((num_taps - self.M, 0), (0, 0)), constant_values=0)
 
         # the number of frames that come out, is the input samples decimated..
         # floor division ensures number of full frames
-        num_frames = (len(x) - num_taps) // self.D + 1
+        self.num_frames = (len(x) - num_taps) // self.D + 1
 
         # buffer to store the output channels
-        self.channels = empty((num_frames, self.M), dtype=result_type(x, h))
+        self.channels = empty((self.num_frames, self.M), dtype=result_type(x, h))
 
         # iterate over each frame which advances D samples i.e. we produce one output
         # sample in every subband for each D sample advance
-        for r in range(num_frames):
+        for r in range(self.num_frames):
 
             # extract the current frame
             start = r * self.D
@@ -74,10 +74,40 @@ class Channelizer:
             folded_frame = frame.reshape(num_taps // self.M, self.M).sum(0)
 
             # phase correction needs to be applied to baseband the channel output
-            phase_corr = exp(-1j * 2 * pi * self.channels.reshape(1, -1) * r / (self.sample_rate_hz / self.D))
+            phase_corr = exp(-1j * 2 * pi * self.channel_centers_hz * r / (self.sample_rate_hz / self.D))[:None]
 
             # channelize
             self.channels[r, :] = fft(folded_frame, axis=0) * phase_corr
+
+    def print_setup(self) -> None:
+        from lib.utils.Utilities import Utilities as utils
+
+        scaled_spacing = utils.auto_scale_frequency(self.channel_spacing_hz)
+        scaled_bw = utils.auto_scale_frequency(self.channel_bandwidth_hz)
+
+        print("Channelizer Created:")
+        print(f"\tNum Channels: {self.M}")
+        print(f"\tChannel Spacing: {scaled_spacing.value} {scaled_spacing.unit}")
+        print(f"\tDecimation Factor: {self.D}")
+        print(f"\tChannel Bandwidth: {scaled_bw.value} {scaled_bw.unit}")
+
+    def print_channel_list(self) -> None:
+        from lib.utils.Utilities import Utilities as utils
+
+        print("Printing Channel List:")
+        print("Channel Ind, Lower Edge, Center, Upper Edge")
+        for n, c in enumerate(self.channel_centers_hz):
+
+            lower_edge = utils.auto_scale_frequency(c - self.channel_bandwidth_hz / 2)
+            center = utils.auto_scale_frequency(c)
+            upper_edge = utils.auto_scale_frequency(c + self.channel_bandwidth_hz / 2)
+
+            if c != -(self.sample_rate_hz / 2):
+                print(f"\t{n:4d}, {lower_edge.value: 3.3f} {lower_edge.unit}, {center.value: 3.3f} {center.unit}, {upper_edge.value: 3.3f} {upper_edge.unit}")
+            else:
+                print(
+                    f"\t{n:4d}, {lower_edge.value: 3.3f} {lower_edge.unit}, {center.value: 3.3f} {center.unit}, {upper_edge.value: 3.3f} {upper_edge.unit} <------- Nyquist straddle band"
+                )
 
     def critical_channelize(self, waveform_in: Waveform, filter_in: ndarray, num_output_channels: int) -> None:
         """
