@@ -144,16 +144,16 @@ class Channelizer:
         return firwin(num_taps, cutoff, fs=sample_rate)
 
     def plot_filter(self, filter_taps: ndarray, can_show: bool) -> None:
-        from matplotlib import sca, subplots, show
+        from matplotlib.pyplot import sca, subplots, show
 
         num_taps = len(filter_taps)
 
         fig, [ax0, ax1] = subplots(2, 1, tight_layout=True)
         wf_h = Waveform(filter_taps, self.sample_rate_hz, 0)
         sca(ax0)
-        wf_h.visualizer.plot_time_domain("msec", "real")  # should be real only vector
+        wf_h.visualizer.plot_time_domain("msec", "real")
         sca(ax1)
-        wf_h.visualizer.plot_spectrum(num_taps / 4, 8192, "sec", "hz")
+        wf_h.visualizer.plot_spectrum(8192, "sec", "hz")
 
         if can_show:
             show()
