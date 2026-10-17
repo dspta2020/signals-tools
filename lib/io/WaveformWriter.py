@@ -3,6 +3,7 @@ from pathlib import Path
 from lib.Waveform import Waveform
 from lib.io.writers.BinWriter import BinWriter
 from lib.io.writers.BaseWriter import BaseWriter
+from lib.io.writers.MfBinWriter import MfBinWriter
 
 
 class WaveformWriter:
@@ -38,5 +39,13 @@ class WaveformWriter:
 
         # setup the strategy
         write_strategy = BinWriter(endianness)
+
+        WaveformWriter.execute_write(outfile_path, waveform_obj, write_strategy)
+
+    @staticmethod
+    def write_mf_bin_file(outfile_path: Path, waveform_obj: Waveform, endianness: str = ">") -> None:
+
+        # setup the strategy
+        write_strategy = MfBinWriter(endianness)
 
         WaveformWriter.execute_write(outfile_path, waveform_obj, write_strategy)

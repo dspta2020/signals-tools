@@ -1,9 +1,9 @@
 from pathlib import Path
-import logging
 
 from lib.Waveform import Waveform
 from lib.io.parsers.BinParser import BinParser
 from lib.io.parsers.BaseParser import BaseParser
+from lib.io.parsers.MfBinParser import MfBinParser
 
 
 class WaveformReader:
@@ -42,4 +42,10 @@ class WaveformReader:
     def read_bin_file(infile_path: Path) -> Waveform:
         """Convenience helper that reads a binary waveform file using BinParser."""
         parsing_strategy = BinParser()
+        return WaveformReader.execute_read(infile_path, parsing_strategy)
+
+    @staticmethod
+    def read_mf_bin_file(infile_path: Path) -> Waveform:
+        """Convenience helper that reads a binary waveform file using BinParser."""
+        parsing_strategy = MfBinParser()
         return WaveformReader.execute_read(infile_path, parsing_strategy)
