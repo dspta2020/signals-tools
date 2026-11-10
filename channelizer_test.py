@@ -43,7 +43,7 @@ def main():
     rx_signal = _make_complex_noise((rx_duration_samples, 1))
 
     # setup the channelizer with some ratio that evaluates to a rational non-integer
-    num_channels = 4
+    num_channels = 16
     decimation_factor = 3
 
     # init the channelizer
@@ -165,7 +165,7 @@ def main():
             mod_q = np.imag(extractor.channel_out[i, 0])
             print(f"    Sample {i:d}: Channelizer = {chan_i: 3.6f} + ({chan_q: 3.6f})i, Modulation = {mod_i: 3.6f} + ({mod_q: 3.6f})i")
 
-        plt.show()
+        # plt.show()
 
     # now compare to the brute force way to channelize.. modulate the data down to
     # baseband and then low pass filter
@@ -190,6 +190,8 @@ def main():
         mod_i = np.real(modulated_out[i, 0])
         mod_q = np.imag(modulated_out[i, 0])
         print(f"    Sample {i:d}: Channelizer = {chan_i: 3.6f} + ({chan_q: 3.6f})i, Modulation = {mod_i: 3.6f} + ({mod_q: 3.6f})i")
+
+    return
 
 
 if __name__ == "__main__":

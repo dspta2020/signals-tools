@@ -53,7 +53,10 @@ class ChannelExtractor:
         h = conj(self._modulate_filter(num_taps, h))
 
         # pad x to change the filter
-        x = pad(x, ((num_taps - self.D, 0), (0, 0)), constant_values=0)
+        # TODO: I'm not sure why but I need to have this "virtual channel spacing" sort of calculation here (fs / center) to
+        # get the output to match the manually modulated filter... When I tried modifying this and the channelizer to use
+        # `num_taps - self.D` which feels more intuitively accurate, I couldn't get them to match the manually modulated filters.
+        x = pad(x, ((num_taps - int(self.sample_rate_hz // self.channel_center_hz), 0), (0, 0)), constant_values=0)
 
         # calculate the number of output frames
         self.num_frames = (len(x) - num_taps) // self.D + 1
