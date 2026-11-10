@@ -7,6 +7,7 @@ from time import perf_counter
 from pathlib import Path
 
 from lib.channelize.Channelizer import Channelizer
+from lib.channelize.ChannelExtractor import ChannelExtractor
 from lib.Waveform import Waveform
 
 import numpy as np
@@ -108,8 +109,12 @@ def main():
     toc = perf_counter()
     print(f"Generated channels in {toc - tic:.6f} seconds\n")
 
+    # going to use the channel extractor to also extract a single channel and compare here
+    extractor = ChannelExtractor(fs, decimation_factor, chan.channel_centers_hz[1])
+    extractor.extract_channel(rx_signal, h)
+
     # more plot
-    if 0:
+    if 1:
         # plot channel 1 here
         fig, ax = plt.subplots()
         channel_ind = 0
@@ -137,6 +142,29 @@ def main():
         ax.axhline(tone_offset_hz[channel_ind] * 1e-3, color="r")
         ax.axhline(tone_offset_hz[channel_ind + 1] * 1e-3, color="r")
         ax.set_title(f"Channel {channel_ind}")
+
+        # plot channel 1 here
+        fig, ax = plt.subplots()
+        channel_ind = 1
+        Waveform(extractor.channel_out, chan.channel_bandwidth_hz, chan.channel_centers_hz[channel_ind]).visualizer.plot_spectrogram(
+            128,
+            8192,
+            "msec",
+            "khz",
+            add_center=True,
+        )
+        ax.axhline(tone_offset_hz[channel_ind] * 1e-3, color="r")
+        ax.axhline(tone_offset_hz[channel_ind + 1] * 1e-3, color="r")
+        ax.set_title(f"Individual Extracted Channel {channel_ind}")
+
+        print(f"Channel {channel_ind:d} - IQ Comparison")
+        for i in range(5):
+            chan_i = np.real(chan.channels[i, channel_ind])
+            chan_q = np.imag(chan.channels[i, channel_ind])
+            mod_i = np.real(extractor.channel_out[i, 0])
+            mod_q = np.imag(extractor.channel_out[i, 0])
+            print(f"    Sample {i:d}: Channelizer = {chan_i: 3.6f} + ({chan_q: 3.6f})i, Modulation = {mod_i: 3.6f} + ({mod_q: 3.6f})i")
+
         plt.show()
 
     # now compare to the brute force way to channelize.. modulate the data down to
