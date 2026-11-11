@@ -12,7 +12,7 @@ def main():
 
     # sampling configs
     data_rate = 32e3
-    sample_rate_hz = data_rate * 512
+    sample_rate_hz = data_rate * 32
     frequency_deviation = 800e3
 
     mod = FSKModulator(sample_rate_hz, data_rate, frequency_deviation)
@@ -25,12 +25,16 @@ def main():
 
     # modulate this buffer
     samples = mod.modulate(buffer_in)
+    print(mod.num_output_samples(buffer_in))
 
+    # plot the phase evolution here
     fig, ax = plt.subplots()
     mod.plot_phase(buffer_in)
 
+    # construct waveform here
     wf = Waveform(samples, sample_rate_hz, 0)
 
+    # plot spectrogram from the waveform
     fig, ax = plt.subplots()
     wf.visualizer.plot_spectrogram(512, 8192, "us", "khz")
     plt.show()

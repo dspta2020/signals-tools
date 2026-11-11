@@ -45,12 +45,7 @@ class ChannelExtractor:
         num_taps = len(h)
 
         # modulate the filter
-        # TODO: Think more about why I have to conjugate the filter here.. I feel like its
-        # because I need time reversal to compute via dot product. I dont remember the convolution
-        # theorem but I feel like the FFT implicitly does this which is why convolution is multiplication
-        # in frequency domain and conjugated multiplication is correlation in the frequency domain. Will
-        # have to look it up though
-        h = conj(self._modulate_filter(num_taps, h))
+        h = self._modulate_filter(num_taps, h)
 
         # pad x to change the filter
         # TODO: I'm not sure why but I need to have this "virtual channel spacing" sort of calculation here (fs / center) to
@@ -81,7 +76,7 @@ class ChannelExtractor:
         from numpy import exp, pi, arange
 
         # assumes the filter is [N x 1]
-        return filter * exp(1j * 2 * pi * self.channel_center_hz * arange(num_taps) / self.sample_rate_hz)[:, None]
+        return filter * exp(-1j * 2 * pi * self.channel_center_hz * arange(num_taps) / self.sample_rate_hz)[:, None]
 
     def _generate_phase_corr(self, frame_idx: int) -> ndarray:
         from numpy import exp, pi
