@@ -29,13 +29,4 @@ class GFSKModulator(FSKModulator):
         phase_masked_data = self._phase_mask(filtered_data, self.phase_increment_per_sample)
         phi = self._accumulate_phase(phase_masked_data)
 
-        import matplotlib.pyplot as plt
-
-        fig, ax = plt.subplots()
-        ax.plot(phi)
-
-        fig, ax = plt.subplots()
-        plt.plot(h)
-        plt.show()
-
         return phi
