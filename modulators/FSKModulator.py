@@ -1,5 +1,8 @@
 import numpy as np
+import matplotlib.pyplot as plt
 from numpy.typing import NDArray
+
+from lib.Waveform import Waveform
 
 
 class FSKModulator:
@@ -24,6 +27,20 @@ class FSKModulator:
         phase_masked_data = self._phase_mask(upsampled_data, self.phase_increment_per_sample)
         phi = self._accumulate_phase(phase_masked_data)
         return self._exponentiate(phi)
+
+    def plot_phase(self, data: bytes) -> None:
+        bytes_data = self._buffer_to_bytes(data)
+        bits_data = self._bytes_to_bits(bytes_data)
+        antipodal_data = self._bits_to_antipodal(bits_data)
+        upsampled_data = self._upsample(antipodal_data, self.upsample_factor)
+        phase_masked_data = self._phase_mask(upsampled_data, self.phase_increment_per_sample)
+        phi = self._accumulate_phase(phase_masked_data)
+
+        # plots the waveform, need to call plt.sca before hand
+        Waveform(phi, self.sample_rate_hz, 0).visualizer.plot_time_domain("sec", "real")
+        plt.ylabel("Phase")
+
+        return
 
     @staticmethod
     def _buffer_to_bytes(buffer_in: bytes) -> NDArray[np.uint8]:

@@ -26,6 +26,9 @@ def main():
     # modulate this buffer
     samples = mod.modulate(buffer_in)
 
+    fig, ax = plt.subplots()
+    mod.plot_phase(buffer_in)
+
     wf = Waveform(samples, sample_rate_hz, 0)
 
     fig, ax = plt.subplots()
